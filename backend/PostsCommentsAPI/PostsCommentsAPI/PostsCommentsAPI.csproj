@@ -26,7 +26,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Features\" />
+    <Folder Include="Features\Posts\" />
+    <Folder Include="Infrastructure\Seed\" />
+    <Folder Include="Common\" />
   </ItemGroup>
 
 </Project>
