@@ -1,0 +1,16 @@
+# Visual Studio
+.vs/
+
+# Backend
+bin/
+obj/
+appsettings.Development.json
+.env
+
+# Frontend
+node_modules/
+dist/
+
+# IDE
+.vscode/
+.idea/
