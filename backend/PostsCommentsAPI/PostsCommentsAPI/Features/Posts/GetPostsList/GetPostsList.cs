@@ -2,25 +2,36 @@ using AutoMapper;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PostsCommentsAPI.Common.Pagination;
+using PostsCommentsAPI.Common.Results;
 using PostsCommentsAPI.Domain.Entities;
+using PostsCommentsAPI.Features.Posts.GetPostsList.Errors;
 using PostsCommentsAPI.Infrastructure.Persistence;
 
 namespace PostsCommentsAPI.Features.Posts.GetPostsList;
 
 public static class GetPostList
 {
-    public sealed record Query(Pager Pager) : IRequest<Pagination<Response>>;
+    public sealed record Query(Pager Pager) : IRequest<Result<Pagination<Response>>>;
 
     internal sealed class Handler(
         AppDbContext dbContext,
-        IMapper mapper) : IRequestHandler<Query, Pagination<Response>>
+        IMapper mapper) : IRequestHandler<Query, Result<Pagination<Response>>>
     {
-        public async Task<Pagination<Response>> Handle(Query request, CancellationToken cancellationToken)
+        public async Task<Result<Pagination<Response>>> Handle(Query request, CancellationToken cancellationToken)
         {
-            return await dbContext.Posts
-                .AsNoTracking()
-                .Map<Post, Response>(mapper)
-                .PaginateAsync(request.Pager, cancellationToken);
+            try
+            {
+                var pagedData = await dbContext.Posts
+                    .AsNoTracking()
+                    .Map<Post, Response>(mapper)
+                    .PaginateAsync(request.Pager, cancellationToken);
+
+                return Result.Success(pagedData);
+            }
+            catch (Exception)
+            {
+                return Result.Failure<Pagination<Response>>(GetPostListErrors.Unexpected);
+            }
         }
     }
 
