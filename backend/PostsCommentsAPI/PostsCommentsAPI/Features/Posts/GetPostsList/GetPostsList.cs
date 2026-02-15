@@ -7,7 +7,7 @@ using PostsCommentsAPI.Domain.Entities;
 using PostsCommentsAPI.Features.Posts.GetPostsList.Errors;
 using PostsCommentsAPI.Infrastructure.Persistence;
 
-namespace PostsCommentsAPI.Features.Posts.GetPostsList;
+namespace PostsCommentsAPI.Features.Posts;
 
 public static class GetPostList
 {
