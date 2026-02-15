@@ -1,26 +1,37 @@
 using AutoMapper;
 using FluentValidation;
 using MediatR;
+using Microsoft.EntityFrameworkCore;
 using PostsCommentsAPI.Common.Results;
 using PostsCommentsAPI.Domain.Entities;
+using PostsCommentsAPI.Features.Comments.Errors;
 using PostsCommentsAPI.Infrastructure.Persistence;
 
-namespace PostsCommentsAPI.Features.Posts;
+namespace PostsCommentsAPI.Features.Comments;
 
-public static class CreatePost
+public static class CreateComment
 {
-    public sealed record Request(string? Title, string? Content);
+    public sealed record Request(string? Content);
 
-    internal sealed record Command(string? Title, string? Content) : IRequest<Result>;
+    internal sealed record Command(int PostId, string? Content) : IRequest<Result>;
 
     internal sealed class Handler(AppDbContext dbContext, IMapper mapper)
         : IRequestHandler<Command, Result>
     {
         public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
         {
-            var post = mapper.Map<Post>(request);
+            var postExists = await dbContext.Posts
+                .AsNoTracking()
+                .AnyAsync(post => post.Id == request.PostId, cancellationToken);
 
-            dbContext.Posts.Add(post);
+            if (!postExists)
+            {
+                return Result.Failure(CreateCommentErrors.PostNotFound);
+            }
+
+            var comment = mapper.Map<Comment>(request);
+
+            dbContext.Comments.Add(comment);
             await dbContext.SaveChangesAsync(cancellationToken);
 
             return Result.Success();
@@ -31,7 +42,7 @@ public static class CreatePost
     {
         public MappingProfile()
         {
-            CreateMap<Command, Post>();
+            CreateMap<Command, Comment>();
         }
     }
 
@@ -39,13 +50,9 @@ public static class CreatePost
     {
         public Validator()
         {
-            RuleFor(x => x.Title)
-                .NotEmpty()
-                .MaximumLength(200);
-
             RuleFor(x => x.Content)
                 .NotEmpty()
-                .MaximumLength(5000);
+                .MaximumLength(1000);
         }
     }
 }

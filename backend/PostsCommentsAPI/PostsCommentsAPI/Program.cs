@@ -4,13 +4,17 @@ using AutoMapper;
 using PostsCommentsAPI.Interceptors;
 using PostsCommentsAPI.Infrastructure.Persistence;
 using PostsCommentsAPI.Features.Posts;
+using PostsCommentsAPI.Features.Comments;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+builder.Services.AddSwaggerGen(options =>
+{
+    options.CustomSchemaIds(type => type.FullName?.Replace("+", ".") ?? type.Name);
+});
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
@@ -36,6 +40,7 @@ app.UseHttpsRedirection();
 app.UseAuthorization();
 
 app.MapPostEndpoints();
+app.MapCommentEndpoints();
 app.MapControllers();
 
 app.Run();
