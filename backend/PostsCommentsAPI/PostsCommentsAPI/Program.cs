@@ -1,7 +1,9 @@
 using MediatR;
 using FluentValidation;
+using AutoMapper;
 using PostsCommentsAPI.Interceptors;
 using PostsCommentsAPI.Infrastructure.Persistence;
+using PostsCommentsAPI.Features.Posts;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -12,6 +14,7 @@ builder.Services.AddSwaggerGen();
 
 builder.Services.AddMediatR(cfg => cfg.RegisterServicesFromAssembly(typeof(Program).Assembly));
 builder.Services.AddValidatorsFromAssemblyContaining<Program>();
+builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
 builder.Services.AddSingleton<AuditableInterceptor>();
 builder.Services.AddDbContext<AppDbContext>((serviceProvider, options) =>
@@ -32,6 +35,7 @@ app.UseHttpsRedirection();
 
 app.UseAuthorization();
 
+app.MapPostEndpoints();
 app.MapControllers();
 
 app.Run();
