@@ -54,6 +54,24 @@ public static class PostsEndpoints
             .WithName("CreatePost")
             .WithSummary("Creates a new post.");
 
+        endpoints.MapPut("/posts/{id:int}", async (
+                int id,
+                UpdatePost.Request request,
+                IMediator mediator,
+                CancellationToken cancellationToken) =>
+            {
+                var result = await mediator.Send(
+                    new UpdatePost.Command(id, request.Title, request.Content),
+                    cancellationToken);
+
+                return result.Match(
+                    onSuccess: () => Results.NoContent(),
+                    onFailure: error => error.ToHttpResult());
+            })
+            .AddEndpointFilter<ValidationFilter<UpdatePost.Request>>()
+            .WithName("UpdatePost")
+            .WithSummary("Updates an existing post.");
+
         return endpoints;
     }
 }
