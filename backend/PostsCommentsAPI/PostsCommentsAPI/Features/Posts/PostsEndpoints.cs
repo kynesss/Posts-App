@@ -72,6 +72,20 @@ public static class PostsEndpoints
             .WithName("UpdatePost")
             .WithSummary("Updates an existing post.");
 
+        endpoints.MapDelete("/posts/{id:int}", async (
+                int id,
+                IMediator mediator,
+                CancellationToken cancellationToken) =>
+            {
+                var result = await mediator.Send(new DeletePost.Command(id), cancellationToken);
+
+                return result.Match(
+                    onSuccess: () => Results.NoContent(),
+                    onFailure: error => error.ToHttpResult());
+            })
+            .WithName("DeletePost")
+            .WithSummary("Deletes post by id.");
+
         return endpoints;
     }
 }
