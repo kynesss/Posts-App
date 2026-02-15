@@ -23,6 +23,20 @@ public static class PostsEndpoints
             .WithName("GetPostsList")
             .WithSummary("Gets all posts.");
 
+        endpoints.MapGet("/posts/{id:int}", async (
+                int id,
+                IMediator mediator,
+                CancellationToken cancellationToken) =>
+            {
+                var result = await mediator.Send(new FetchPost.Query(id), cancellationToken);
+
+                return result.Match(
+                    onSuccess: value => Results.Ok(value),
+                    onFailure: error => error.ToHttpResult());
+            })
+            .WithName("FetchPost")
+            .WithSummary("Gets post details by id.");
+
         endpoints.MapPost("/posts", async (
                 CreatePost.Request request,
                 IMediator mediator,
