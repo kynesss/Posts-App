@@ -1,9 +1,18 @@
+using System.ComponentModel;
+
 namespace PostsCommentsAPI.Common.Pagination;
 
 public class Pager
 {
-    public int Page { get; set; } = 1;
-    public int PageSize { get; set; } = 10;
-    public string Sort { get; set; } = "CreatedAt";
-    public string Order { get; set; } = "desc";
+    [DefaultValue(1)]
+    public int? Page { get; set; }
+
+    [DefaultValue(10)]
+    public int? PageSize { get; set; }
+
+    [DefaultValue("id")]
+    public string? Sort { get; set; }
+
+    [DefaultValue("asc")]
+    public string? Order { get; set; }
 }

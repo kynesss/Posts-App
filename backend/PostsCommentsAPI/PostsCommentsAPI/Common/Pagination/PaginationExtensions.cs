@@ -29,8 +29,10 @@ public static class PaginationExtensions
         Expression<Func<TSource, TProjection>> selector,
         CancellationToken cancellationToken = default)
     {
-        var normalizedPage = pager.Page < 1 ? DefaultPage : pager.Page;
-        var normalizedPageSize = pager.PageSize < 1 ? DefaultPageSize : Math.Min(pager.PageSize, MaxPageSize);
+        var page = pager.Page ?? DefaultPage;
+        var pageSize = pager.PageSize ?? DefaultPageSize;
+        var normalizedPage = page < 1 ? DefaultPage : page;
+        var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, MaxPageSize);
 
         var sortedQuery = ApplySorting(query, pager);
 
@@ -49,8 +51,10 @@ public static class PaginationExtensions
         Pager pager,
         CancellationToken cancellationToken = default)
     {
-        var normalizedPage = pager.Page < 1 ? DefaultPage : pager.Page;
-        var normalizedPageSize = pager.PageSize < 1 ? DefaultPageSize : Math.Min(pager.PageSize, MaxPageSize);
+        var page = pager.Page ?? DefaultPage;
+        var pageSize = pager.PageSize ?? DefaultPageSize;
+        var normalizedPage = page < 1 ? DefaultPage : page;
+        var normalizedPageSize = pageSize < 1 ? DefaultPageSize : Math.Min(pageSize, MaxPageSize);
 
         var sortedQuery = ApplySorting(mappedQuery.Query, pager);
 
