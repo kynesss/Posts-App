@@ -8,3 +8,7 @@ export const getPosts = async (pager) => {
   });
   return response.data;
 };
+
+export const fetchPost = async (id) => {
+  return (await axios.get(`${POSTS_URL}/${id}`)).data;
+};
