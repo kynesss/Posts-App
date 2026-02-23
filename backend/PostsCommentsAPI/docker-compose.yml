@@ -13,7 +13,7 @@ services:
       - posts-db
 
   posts-db:
-    image: postgres:latest
+    image: postgres:17
     container_name: posts-db
     restart: always
     environment:
