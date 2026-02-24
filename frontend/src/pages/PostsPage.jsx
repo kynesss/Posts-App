@@ -3,6 +3,7 @@ import {
   Stack,
   Card,
   CardContent,
+  CardActionArea,
   Typography,
   CircularProgress,
   Alert,
@@ -11,6 +12,7 @@ import {
 
 import usePosts from "../hooks/usePosts";
 import { useState } from "react";
+import { Link } from "react-router-dom";
 
 const PostsPage = () => {
   const [pager, setPager] = useState({
@@ -44,11 +46,23 @@ const PostsPage = () => {
                 flexDirection: "column",
               }}
             >
-              <Card>
-                <CardContent>
-                  <Typography variant="h6">{post.title}</Typography>
-                  <Typography color="text.secondary">{post.content}</Typography>
-                </CardContent>
+              <Card
+                sx={{
+                  transition: "0.2s",
+                  "&:hover": {
+                    boxShadow: 6,
+                    transform: "translateY(-2px)",
+                  },
+                }}
+              >
+                <CardActionArea component={Link} to={`/posts/${post.id}`}>
+                  <CardContent>
+                    <Typography variant="h6">{post.title}</Typography>
+                    <Typography color="text.secondary">
+                      {post.content}
+                    </Typography>
+                  </CardContent>
+                </CardActionArea>
               </Card>
             </Box>
           ))}
