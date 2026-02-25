@@ -2,9 +2,12 @@ import axios from "axios";
 
 const POSTS_URL = "http://localhost:8080/posts";
 
-export const getPosts = async (pager) => {
+export const getPosts = async (search, pager) => {
   const response = await axios.get(POSTS_URL, {
-    params: pager,
+    params: {
+      search,
+      ...pager,
+    },
   });
   return response.data;
 };

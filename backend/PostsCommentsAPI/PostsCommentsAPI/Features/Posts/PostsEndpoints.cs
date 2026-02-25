@@ -7,17 +7,18 @@ namespace PostsCommentsAPI.Features.Posts;
 
 public static class PostsEndpoints
 {
-    public static IEndpointRouteBuilder MapPostEndpoints(this IEndpointRouteBuilder endpoints)
+    public static void MapPostEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("/posts", async (
+                [AsParameters] GetPostList.Filter filter,
                 [AsParameters] Pager pager,
                 IMediator mediator,
                 CancellationToken cancellationToken) =>
             {
-                var result = await mediator.Send(new GetPostList.Query(pager), cancellationToken);
+                var result = await mediator.Send(new GetPostList.Query(filter, pager), cancellationToken);
 
                 return result.Match(
-                    onSuccess: value => Results.Ok(value),
+                    onSuccess: Results.Ok,
                     onFailure: error => error.ToHttpResult());
             })
             .WithName("GetPostsList")
@@ -31,7 +32,7 @@ public static class PostsEndpoints
                 var result = await mediator.Send(new FetchPost.Query(id), cancellationToken);
 
                 return result.Match(
-                    onSuccess: value => Results.Ok(value),
+                    onSuccess: Results.Ok,
                     onFailure: error => error.ToHttpResult());
             })
             .WithName("FetchPost")
@@ -65,7 +66,7 @@ public static class PostsEndpoints
                     cancellationToken);
 
                 return result.Match(
-                    onSuccess: () => Results.NoContent(),
+                    onSuccess: Results.NoContent,
                     onFailure: error => error.ToHttpResult());
             })
             .AddEndpointFilter<ValidationFilter<UpdatePost.Request>>()
@@ -80,12 +81,10 @@ public static class PostsEndpoints
                 var result = await mediator.Send(new DeletePost.Command(id), cancellationToken);
 
                 return result.Match(
-                    onSuccess: () => Results.NoContent(),
+                    onSuccess: Results.NoContent,
                     onFailure: error => error.ToHttpResult());
             })
             .WithName("DeletePost")
             .WithSummary("Deletes post by id.");
-
-        return endpoints;
     }
 }

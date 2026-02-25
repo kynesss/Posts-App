@@ -1,7 +1,7 @@
 import { getPosts } from "../api/postsApi";
 import { useEffect, useState } from "react";
 
-const usePosts = (pager) => {
+const usePosts = (search, pager) => {
   const [posts, setPosts] = useState({ items: [], totalPages: 1, page: 1 });
   const [isLoading, setLoading] = useState(true);
   const [error, setError] = useState(null);
@@ -9,8 +9,8 @@ const usePosts = (pager) => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const data = await getPosts(pager);
         setLoading(true);
+        const data = await getPosts(search, pager);
         setPosts(data);
         setError(null);
       } catch (err) {
@@ -21,7 +21,7 @@ const usePosts = (pager) => {
     };
 
     fetchData();
-  }, [pager]);
+  }, [search, pager]);
 
   return { posts, isLoading, error };
 };

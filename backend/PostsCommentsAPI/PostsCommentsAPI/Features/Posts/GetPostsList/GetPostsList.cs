@@ -1,4 +1,5 @@
 using AutoMapper;
+using LinqKit;
 using MediatR;
 using Microsoft.EntityFrameworkCore;
 using PostsCommentsAPI.Common.Pagination;
@@ -11,7 +12,9 @@ namespace PostsCommentsAPI.Features.Posts;
 
 public static class GetPostList
 {
-    public sealed record Query(Pager Pager) : IRequest<Result<Pagination<Response>>>;
+    public sealed record Query(Filter Filter, Pager Pager) : IRequest<Result<Pagination<Response>>>;
+
+    public sealed record Filter(string Search);
 
     internal sealed class Handler(
         AppDbContext dbContext,
@@ -21,8 +24,16 @@ public static class GetPostList
         {
             try
             {
+                var predicate = PredicateBuilder.New<Post>(true);
+
+                if (!string.IsNullOrWhiteSpace(request.Filter.Search))
+                {
+                    predicate = predicate.And(s => s.Title.Contains(request.Filter.Search));
+                }
+                
                 var pagedData = await dbContext.Posts
                     .AsNoTracking()
+                    .Where(predicate)
                     .Map<Post, Response>(mapper)
                     .PaginateAsync(request.Pager, cancellationToken);
 

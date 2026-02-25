@@ -8,6 +8,7 @@ import {
   CircularProgress,
   Alert,
   Pagination,
+  TextField,
 } from "@mui/material";
 
 import usePosts from "../hooks/usePosts";
@@ -15,13 +16,15 @@ import { useState } from "react";
 import { Link } from "react-router-dom";
 
 const PostsPage = () => {
+  const [inputValue, setInputValue] = useState("");
+  const [search, setSearch] = useState("");
   const [pager, setPager] = useState({
     page: 1,
     pageSize: 10,
     sort: "id",
     order: "desc",
   });
-  const { posts, isLoading, error } = usePosts(pager);
+  const { posts, isLoading, error } = usePosts(search, pager);
   return (
     <Box
       sx={{
@@ -38,6 +41,20 @@ const PostsPage = () => {
         <CircularProgress size={200} color="secondary" />
       ) : (
         <Stack spacing={2} sx={{ width: "100%", maxWidth: 900 }}>
+          <TextField
+            label="Szukaj"
+            variant="outlined"
+            size="small"
+            value={inputValue}
+            onChange={(e) => setInputValue(e.target.value)}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                setSearch(inputValue);
+                setPager((prev) => ({ ...prev, page: 1 }));
+              }
+            }}
+            placeholder="Wpisz tytuł..."
+          />
           {posts.items.map((post) => (
             <Box
               key={post.id}
