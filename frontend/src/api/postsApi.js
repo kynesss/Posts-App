@@ -15,3 +15,7 @@ export const getPosts = async (search, pager) => {
 export const fetchPost = async (id) => {
   return (await axios.get(`${POSTS_URL}/${id}`)).data;
 };
+
+export const addPost = async (post) => {
+  return (await axios.post(POSTS_URL, post)).data;
+};

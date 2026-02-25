@@ -11,14 +11,14 @@ public static class CreatePost
 {
     public sealed record Request(string? Title, string? Content);
 
-    internal sealed record Command(string? Title, string? Content) : IRequest<Result>;
+    internal sealed record Command(Request Request) : IRequest<Result>;
 
     internal sealed class Handler(AppDbContext dbContext, IMapper mapper)
         : IRequestHandler<Command, Result>
     {
-        public async Task<Result> Handle(Command request, CancellationToken cancellationToken)
+        public async Task<Result> Handle(Command command, CancellationToken cancellationToken)
         {
-            var post = mapper.Map<Post>(request);
+            var post = mapper.Map<Post>(command.Request);
 
             dbContext.Posts.Add(post);
             await dbContext.SaveChangesAsync(cancellationToken);
@@ -31,7 +31,7 @@ public static class CreatePost
     {
         public MappingProfile()
         {
-            CreateMap<Command, Post>();
+            CreateMap<Request, Post>();
         }
     }
 

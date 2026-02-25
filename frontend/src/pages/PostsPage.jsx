@@ -9,6 +9,7 @@ import {
   Alert,
   Pagination,
   TextField,
+  Button,
 } from "@mui/material";
 
 import usePosts from "../hooks/usePosts";
@@ -41,6 +42,16 @@ const PostsPage = () => {
         <CircularProgress size={200} color="secondary" />
       ) : (
         <Stack spacing={2} sx={{ width: "100%", maxWidth: 900 }}>
+          <Button
+            variant="contained"
+            label="test"
+            size="large"
+            component={Link}
+            to="/posts/add"
+            sx={{ maxWidth: 150 }}
+          >
+            Dodaj Post
+          </Button>
           <TextField
             label="Szukaj"
             variant="outlined"

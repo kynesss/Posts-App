@@ -44,7 +44,7 @@ public static class PostsEndpoints
                 CancellationToken cancellationToken) =>
             {
                 var result = await mediator.Send(
-                    new CreatePost.Command(request.Title, request.Content),
+                    new CreatePost.Command(request),
                     cancellationToken);
 
                 return result.Match(
