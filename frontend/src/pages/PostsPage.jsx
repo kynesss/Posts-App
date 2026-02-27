@@ -10,13 +10,18 @@ import {
   Pagination,
   TextField,
   Button,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 } from "@mui/material";
 
 import usePosts from "../hooks/usePosts";
 import { useState } from "react";
 import { Link } from "react-router-dom";
+import usePostsMutations from "../hooks/usePostsMutations";
 
 const PostsPage = () => {
+  const [selectedPostId, setSelectedPostId] = useState(null);
   const [inputValue, setInputValue] = useState("");
   const [search, setSearch] = useState("");
   const [pager, setPager] = useState({
@@ -26,6 +31,27 @@ const PostsPage = () => {
     order: "desc",
   });
   const { posts, isLoading, error } = usePosts(search, pager);
+  const { deletePost } = usePostsMutations();
+
+  const openDeleteDialog = (id) => setSelectedPostId(id);
+  const closeDeleteDialog = () => setSelectedPostId(null);
+
+  const open = selectedPostId !== null;
+
+  const handleDelete = async () => {
+    try {
+      if (selectedPostId == null) return;
+      await deletePost(selectedPostId);
+      refreshData();
+    } finally {
+      closeDeleteDialog();
+    }
+  };
+
+  const refreshData = () => {
+    setPager((prev) => ({ ...prev, page: 1 }));
+  };
+
   return (
     <Box
       sx={{
@@ -42,9 +68,19 @@ const PostsPage = () => {
         <CircularProgress size={200} color="secondary" />
       ) : (
         <Stack spacing={2} sx={{ width: "100%", maxWidth: 900 }}>
+          <Dialog open={open} onClose={closeDeleteDialog}>
+            <DialogTitle>Jesteś pewien?</DialogTitle>
+
+            <DialogActions>
+              <Button onClick={closeDeleteDialog}>Anuluj</Button>
+              <Button onClick={handleDelete} color="error" variant="contained">
+                Usuń
+              </Button>
+            </DialogActions>
+          </Dialog>
+
           <Button
             variant="contained"
-            label="test"
             size="large"
             component={Link}
             to="/posts/add"
@@ -61,7 +97,7 @@ const PostsPage = () => {
             onKeyDown={(e) => {
               if (e.key === "Enter") {
                 setSearch(inputValue);
-                setPager((prev) => ({ ...prev, page: 1 }));
+                refreshData();
               }
             }}
             placeholder="Wpisz tytuł..."
@@ -81,6 +117,9 @@ const PostsPage = () => {
                     boxShadow: 6,
                     transform: "translateY(-2px)",
                   },
+                  display: "flex",
+                  alignItems: "center",
+                  paddingRight: 2,
                 }}
               >
                 <CardActionArea component={Link} to={`/posts/${post.id}`}>
@@ -91,6 +130,12 @@ const PostsPage = () => {
                     </Typography>
                   </CardContent>
                 </CardActionArea>
+                <Button
+                  variant="contained"
+                  onClick={() => openDeleteDialog(post.id)}
+                >
+                  Usuń
+                </Button>
               </Card>
             </Box>
           ))}

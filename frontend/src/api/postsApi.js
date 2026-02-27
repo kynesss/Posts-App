@@ -19,3 +19,11 @@ export const fetchPost = async (id) => {
 export const addPost = async (post) => {
   return (await axios.post(POSTS_URL, post)).data;
 };
+
+export const removePost = async (id) => {
+  return (await axios.delete(`${POSTS_URL}/${id}`)).data;
+};
+
+export const editPost = async (id, post) => {
+  return await axios.put(`${POSTS_URL}/${id}`, post);
+};
