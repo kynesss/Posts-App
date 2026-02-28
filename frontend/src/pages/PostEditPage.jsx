@@ -14,8 +14,12 @@ import {
 
 const PostEditPage = () => {
   const { id } = useParams();
-  const { updatePost, isLoading, error } = usePostsMutations();
-  const { post } = usePost(id);
+  const {
+    updatePost,
+    isLoading: isSaving,
+    error: saveError,
+  } = usePostsMutations();
+  const { post, isLoading: isFetching, error: fetchError } = usePost(id);
   const [editedPost, setEditedPost] = useState({ title: "", content: "" });
   const navigate = useNavigate();
 
@@ -38,6 +42,17 @@ const PostEditPage = () => {
     }
   };
 
+  if (fetchError) {
+    return <Alert severity="error">{fetchError}</Alert>;
+  }
+
+  if (isFetching)
+    return (
+      <Box sx={{ display: "flex", justifyContent: "center", py: 4 }}>
+        <CircularProgress size={100} color="inherit" />
+      </Box>
+    );
+
   return (
     <Box
       component="form"
@@ -58,9 +73,9 @@ const PostEditPage = () => {
         Edytuj Post
       </Typography>
 
-      {error && (
+      {saveError && (
         <Alert severity="error" sx={{ mb: 2 }}>
-          {error}
+          {saveError}
         </Alert>
       )}
 
@@ -91,13 +106,9 @@ const PostEditPage = () => {
           variant="contained"
           size="large"
           sx={{ width: 150 }}
-          disabled={isLoading}
+          disabled={isSaving}
         >
-          {isLoading ? (
-            <CircularProgress size={22} color="inherit" />
-          ) : (
-            "Wyślij"
-          )}
+          {isSaving ? <CircularProgress size={22} color="inherit" /> : "Wyślij"}
         </Button>
       </Stack>
     </Box>
