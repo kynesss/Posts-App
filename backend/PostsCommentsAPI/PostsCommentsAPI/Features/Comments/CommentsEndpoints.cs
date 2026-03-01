@@ -7,18 +7,19 @@ namespace PostsCommentsAPI.Features.Comments;
 
 public static class CommentsEndpoints
 {
-    public static IEndpointRouteBuilder MapCommentEndpoints(this IEndpointRouteBuilder endpoints)
+    public static void MapCommentEndpoints(this IEndpointRouteBuilder endpoints)
     {
         endpoints.MapGet("/posts/{postId:int}/comments", async (
                 int postId,
+                [AsParameters] FetchPostComments.Filter filter,
                 [AsParameters] Pager pager,
                 IMediator mediator,
                 CancellationToken cancellationToken) =>
             {
-                var result = await mediator.Send(new FetchPostComments.Query(postId, pager), cancellationToken);
+                var result = await mediator.Send(new FetchPostComments.Query(postId, filter, pager), cancellationToken);
 
                 return result.Match(
-                    onSuccess: value => Results.Ok(value),
+                    onSuccess: Results.Ok,
                     onFailure: error => error.ToHttpResult());
             })
             .WithName("FetchPostComments")
@@ -53,7 +54,7 @@ public static class CommentsEndpoints
                     cancellationToken);
 
                 return result.Match(
-                    onSuccess: () => Results.NoContent(),
+                    onSuccess: Results.NoContent,
                     onFailure: error => error.ToHttpResult());
             })
             .AddEndpointFilter<ValidationFilter<UpdateComment.Request>>()
@@ -68,12 +69,10 @@ public static class CommentsEndpoints
                 var result = await mediator.Send(new DeleteComment.Command(id), cancellationToken);
 
                 return result.Match(
-                    onSuccess: () => Results.NoContent(),
+                    onSuccess: Results.NoContent,
                     onFailure: error => error.ToHttpResult());
             })
             .WithName("DeleteComment")
             .WithSummary("Deletes comment by id.");
-
-        return endpoints;
     }
 }

@@ -14,7 +14,7 @@ public static class GetPostList
 {
     public sealed record Query(Filter Filter, Pager Pager) : IRequest<Result<Pagination<Response>>>;
 
-    public sealed record Filter(string Search);
+    public sealed record Filter(string? Search = null);
 
     internal sealed class Handler(
         AppDbContext dbContext,
@@ -26,7 +26,7 @@ public static class GetPostList
             {
                 var predicate = PredicateBuilder.New<Post>(true);
 
-                if (!string.IsNullOrWhiteSpace(request.Filter.Search))
+                if (!string.IsNullOrWhiteSpace(request.Filter?.Search))
                 {
                     predicate = predicate.And(s => s.Title.Contains(request.Filter.Search));
                 }
