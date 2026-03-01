@@ -67,6 +67,8 @@ const PostsPage = () => {
         </Alert>
       ) : isLoading ? (
         <CircularProgress size={200} color="secondary" />
+      ) : posts.items.length === 0 ? (
+        <Alert severity="info">Brak postów</Alert>
       ) : (
         <Stack spacing={2} sx={{ width: "100%", maxWidth: 900 }}>
           <Dialog open={open} onClose={closeDeleteDialog}>

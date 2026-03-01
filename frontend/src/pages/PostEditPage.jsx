@@ -39,11 +39,16 @@ const PostEditPage = () => {
     order: "desc",
   });
   const [search, setSearch] = useState(null);
+  const [inputValue, setInputValue] = useState("");
   const {
     comments,
     isLoading: isLoadingComments,
     error: fetchCommentsError,
   } = useComments(id, search, pager);
+
+  const refreshData = () => {
+    setPager((prev) => ({ ...prev, page: 1 }));
+  };
 
   useEffect(() => {
     if (!post) return;
@@ -141,29 +146,74 @@ const PostEditPage = () => {
           }}
         >
           <Typography variant="h4">Komentarze</Typography>
-          <Stack spacing={2}>
-            {comments.items.map((comment) => (
-              <Box key={comment.id}>
-                <Card sx={hoverCardSx}>
-                  <CardContent>
-                    <Typography variant="h6">{comment.content}</Typography>
-                  </CardContent>
-                </Card>
-              </Box>
-            ))}
 
-            <Box sx={{ display: "flex" }}>
-              <Pagination
-                sx={{ m: "auto", maxWidth: "100%", mt: 2 }}
-                page={pager.page}
-                count={comments.totalPages ?? 1}
-                color="primary"
-                onChange={(_, value) =>
-                  setPager((prev) => ({ ...prev, page: value }))
-                }
-              />
+          {fetchCommentsError ? (
+            <Alert severity="error">{fetchCommentsError}</Alert>
+          ) : isLoadingComments ? (
+            <Box sx={{ display: "flex", justifyContent: "center" }}>
+              <CircularProgress size={66} color="secondary" />
             </Box>
-          </Stack>
+          ) : comments.items.length === 0 ? (
+            <Alert severity="info">Brak komentarzy</Alert>
+          ) : (
+            <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <TextField
+                variant="outlined"
+                value={inputValue}
+                size="small"
+                onChange={(e) => setInputValue(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    setSearch(inputValue);
+                    refreshData();
+                  }
+                }}
+                placeholder="Wyszukaj..."
+              />
+
+              <Stack spacing={2}>
+                {comments.items.map((comment) => (
+                  <Box key={comment.id}>
+                    <Card sx={[hoverCardSx, { position: "relative" }]}>
+                      <CardActionArea
+                        component={Link}
+                        to={`/posts/${post.id}/comment/${comment.id}`}
+                      >
+                        <CardContent>
+                          <Typography variant="h6">
+                            {comment.content}
+                          </Typography>
+                        </CardContent>
+                      </CardActionArea>
+                      <Button
+                        variant="contained"
+                        sx={{
+                          position: "absolute",
+                          top: 0,
+                          right: 0,
+                          zIndex: 1,
+                        }}
+                      >
+                        X
+                      </Button>
+                    </Card>
+                  </Box>
+                ))}
+
+                <Box sx={{ display: "flex" }}>
+                  <Pagination
+                    sx={{ m: "auto", maxWidth: "100%", mt: 2 }}
+                    page={pager.page}
+                    count={comments.totalPages ?? 1}
+                    color="primary"
+                    onChange={(_, value) =>
+                      setPager((prev) => ({ ...prev, page: value }))
+                    }
+                  />
+                </Box>
+              </Stack>
+            </Box>
+          )}
         </Box>
       </Stack>
     </Container>
