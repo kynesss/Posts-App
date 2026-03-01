@@ -19,6 +19,7 @@ import usePosts from "../hooks/usePosts";
 import { useState } from "react";
 import { Link } from "react-router-dom";
 import usePostsMutations from "../hooks/usePostsMutations";
+import { hoverCardSx } from "../styles/cardStyles";
 
 const PostsPage = () => {
   const [selectedPostId, setSelectedPostId] = useState(null);
@@ -111,16 +112,14 @@ const PostsPage = () => {
               }}
             >
               <Card
-                sx={{
-                  transition: "0.2s",
-                  "&:hover": {
-                    boxShadow: 6,
-                    transform: "translateY(-2px)",
+                sx={[
+                  hoverCardSx,
+                  {
+                    display: "flex",
+                    alignItems: "center",
+                    paddingRight: 2,
                   },
-                  display: "flex",
-                  alignItems: "center",
-                  paddingRight: 2,
-                }}
+                ]}
               >
                 <CardActionArea component={Link} to={`/posts/${post.id}`}>
                   <CardContent>

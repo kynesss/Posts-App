@@ -25,5 +25,5 @@ export const removePost = async (id) => {
 };
 
 export const editPost = async (id, post) => {
-  return await axios.put(`${POSTS_URL}/${id}`, post);
+  return (await axios.put(`${POSTS_URL}/${id}`, post)).data;
 };
