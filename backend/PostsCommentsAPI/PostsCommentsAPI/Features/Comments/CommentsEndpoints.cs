@@ -11,12 +11,12 @@ public static class CommentsEndpoints
     {
         endpoints.MapGet("/posts/{postId:int}/comments", async (
                 int postId,
-                [AsParameters] FetchPostComments.Filter filter,
+                [AsParameters] GetPostComments.Filter filter,
                 [AsParameters] Pager pager,
                 IMediator mediator,
                 CancellationToken cancellationToken) =>
             {
-                var result = await mediator.Send(new FetchPostComments.Query(postId, filter, pager), cancellationToken);
+                var result = await mediator.Send(new GetPostComments.Query(postId, filter, pager), cancellationToken);
 
                 return result.Match(
                     onSuccess: Results.Ok,
@@ -24,6 +24,21 @@ public static class CommentsEndpoints
             })
             .WithName("FetchPostComments")
             .WithSummary("Gets comments for a specific post.");
+
+        endpoints.MapGet("/posts/{postId:int}/comments/{id:int}", async (
+                int postId,
+                int id,
+                IMediator mediator,
+                CancellationToken cancellationToken) =>
+            {
+                var result = await mediator.Send(new FetchPostComment.Query(postId, id), cancellationToken);
+
+                return result.Match(
+                    onSuccess: Results.Ok,
+                    onFailure: error => error.ToHttpResult());
+            })
+            .WithName("FetchPostComment")
+            .WithSummary("Gets comment details by id for a specific post.");
 
         endpoints.MapPost("/posts/{postId:int}/comments", async (
                 int postId,

@@ -17,6 +17,11 @@ export const addComment = async (postId, content) => {
     .data;
 };
 
+export const fetchPostComment = async (postId, commentId) => {
+  return (await axios.get(`${BASE_URL}/posts/${postId}/comments/${commentId}`))
+    .data;
+};
+
 export const editComment = async (id, content) => {
   return (await axios.put(`${BASE_URL}/comments/${id}`, content)).data;
 };

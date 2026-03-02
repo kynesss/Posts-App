@@ -10,7 +10,7 @@ using LinqKit;
 
 namespace PostsCommentsAPI.Features.Comments;
 
-public static class FetchPostComments
+public static class GetPostComments
 {
     public sealed record Query(int PostId, Filter Filter, Pager Pager) : IRequest<Result<Pagination<Response>>>;
     public sealed record Filter(string? Search = null);

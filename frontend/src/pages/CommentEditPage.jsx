@@ -1,13 +1,68 @@
-import React from "react";
-import { useParams } from "react-router-dom";
+import { Button, Box, TextField, Stack, Typography } from "@mui/material";
+import { Link } from "react-router-dom";
+import { useParams, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import useCommentsMutations from "../hooks/useCommentsMutations";
+import useComment from "../hooks/useComment";
 
 const CommentEditPage = () => {
   const { postId, commentId } = useParams();
+  const { updateComment } = useCommentsMutations();
+  const { comment } = useComment(postId, commentId);
+  const [content, setContent] = useState("");
+  const navigate = useNavigate();
 
+  useEffect(() => {
+    if (comment) {
+      setContent(comment.content ?? "");
+    }
+  }, [comment]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    if (!content.trim()) return;
+    try {
+      await updateComment(commentId, { content });
+      navigate(`/posts/${postId}`);
+    } catch {
+      //
+    }
+  };
   return (
-    <div>
-      Post Id: {postId} Comment Id: {commentId}
-    </div>
+    <Box
+      sx={{ maxWidth: 900, m: "auto" }}
+      component="form"
+      onSubmit={handleSubmit}
+    >
+      <Stack spacing={5}>
+        <Button
+          variant="contained"
+          component={Link}
+          to={`/posts/${postId}`}
+          sx={{ maxWidth: 150 }}
+        >
+          Wróć
+        </Button>
+        <Typography variant="h4">Edytuj komentarz</Typography>
+        <TextField
+          label="Treść"
+          variant="outlined"
+          value={content}
+          onChange={(e) => setContent(e.target.value)}
+          minRows={5}
+          multiline
+          required
+        ></TextField>
+        <Button
+          variant="contained"
+          sx={{ maxWidth: 150, m: "auto" }}
+          type="submit"
+        >
+          Wyślij
+        </Button>
+      </Stack>
+    </Box>
   );
 };
 
