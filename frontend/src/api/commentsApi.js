@@ -12,13 +12,13 @@ export const getComments = async (postId, search, pager) => {
   return response.data;
 };
 
-export const addComment = async (postId, comment) => {
-  return (await axios.post(`${BASE_URL}/posts/${postId}/comments`, comment))
+export const addComment = async (postId, content) => {
+  return (await axios.post(`${BASE_URL}/posts/${postId}/comments`, content))
     .data;
 };
 
-export const editComment = async (id, comment) => {
-  return (await axios.put(`${BASE_URL}/comments/${id}`, comment)).data;
+export const editComment = async (id, content) => {
+  return (await axios.put(`${BASE_URL}/comments/${id}`, content)).data;
 };
 
 export const deleteComment = async (id) => {

@@ -6,6 +6,8 @@ import PostEditPage from "./pages/PostEditPage";
 import CreatePostPage from "./pages/CreatePostPage";
 import AboutPage from "./pages/AboutPage";
 import NotFoundPage from "./pages/NotFoundPage";
+import CreateCommentPage from "./pages/CreateCommentPage";
+import CommentEditPage from "./pages/CommentEditPage";
 
 function App() {
   return (
@@ -15,6 +17,14 @@ function App() {
         <Route path="posts" element={<PostsPage />} />
         <Route path="posts/:id" element={<PostEditPage />} />
         <Route path="posts/add" element={<CreatePostPage />} />
+        <Route
+          path="posts/:postId/comments/add"
+          element={<CreateCommentPage />}
+        />
+        <Route
+          path="posts/:postId/comments/:commentId"
+          element={<CommentEditPage />}
+        />
         <Route path="about" element={<AboutPage />} />
         <Route path="*" element={<NotFoundPage />} />
       </Route>

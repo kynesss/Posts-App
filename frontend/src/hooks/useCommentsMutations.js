@@ -18,9 +18,9 @@ const useCommentsMutations = () => {
     }
   };
 
-  const createComment = (postId, comment) =>
-    run(() => addComment(postId, comment));
-  const updateComment = (id, comment) => run(() => editComment(id, comment));
+  const createComment = (postId, content) =>
+    run(() => addComment(postId, content));
+  const updateComment = (id, content) => run(() => editComment(id, content));
   const removeComment = (id) => run(() => deleteComment(id));
 
   return { createComment, updateComment, removeComment, isLoading, error };

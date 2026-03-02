@@ -233,7 +233,7 @@ const PostEditPage = () => {
                     <Card sx={[hoverCardSx, { position: "relative" }]}>
                       <CardActionArea
                         component={Link}
-                        to={`/posts/${post.id}/comment/${comment.id}`}
+                        to={`/posts/${post.id}/comments/${comment.id}`}
                       >
                         <CardContent>
                           <Typography variant="h6">
