@@ -11,6 +11,9 @@ import {
   Card,
   CardActionArea,
   CardContent,
+  Dialog,
+  DialogTitle,
+  DialogActions,
 } from "@mui/material";
 import { useState, useEffect } from "react";
 import { useParams, useNavigate, Link } from "react-router-dom";
@@ -20,6 +23,7 @@ import usePost from "../hooks/usePost";
 
 import { hoverCardSx } from "../styles/cardStyles";
 import useComments from "../hooks/useComments";
+import useCommentsMutations from "../hooks/useCommentsMutations";
 
 const PostEditPage = () => {
   const { id } = useParams();
@@ -45,6 +49,31 @@ const PostEditPage = () => {
     isLoading: isLoadingComments,
     error: fetchCommentsError,
   } = useComments(id, search, pager);
+
+  const [selectedCommentId, setSelectedCommentId] = useState(null);
+  const open = selectedCommentId !== null;
+  const openDeleteDialog = (commentId) => setSelectedCommentId(commentId);
+  const closeDeleteDialog = () => setSelectedCommentId(null);
+
+  const {
+    createComment,
+    removeComment,
+    isLoading: IsSavingComment,
+    error: saveCommentError,
+  } = useCommentsMutations();
+
+  const handleDelete = async () => {
+    try {
+      console.log("comment id: ", selectedCommentId);
+      if (!selectedCommentId) return;
+      await removeComment(selectedCommentId);
+      refreshData();
+    } catch {
+      //
+    } finally {
+      closeDeleteDialog();
+    }
+  };
 
   const refreshData = () => {
     setPager((prev) => ({ ...prev, page: 1 }));
@@ -147,6 +176,17 @@ const PostEditPage = () => {
         >
           <Typography variant="h4">Komentarze</Typography>
 
+          {!fetchCommentsError && (
+            <Button
+              variant="contained"
+              sx={{ width: 150 }}
+              component={Link}
+              to={`/posts/${post.id}/comments/add`}
+            >
+              Dodaj
+            </Button>
+          )}
+
           {fetchCommentsError ? (
             <Alert severity="error">{fetchCommentsError}</Alert>
           ) : isLoadingComments ? (
@@ -157,6 +197,22 @@ const PostEditPage = () => {
             <Alert severity="info">Brak komentarzy</Alert>
           ) : (
             <Box sx={{ display: "flex", flexDirection: "column", gap: 4 }}>
+              <Dialog open={open} onClose={closeDeleteDialog}>
+                <DialogTitle>Jesteś pewien?</DialogTitle>
+                <DialogActions>
+                  <Button variant="contained" onClick={closeDeleteDialog}>
+                    Anuluj
+                  </Button>
+                  <Button
+                    variant="contained"
+                    color="error"
+                    onClick={handleDelete}
+                  >
+                    Usuń
+                  </Button>
+                </DialogActions>
+              </Dialog>
+
               <TextField
                 variant="outlined"
                 value={inputValue}
@@ -193,6 +249,7 @@ const PostEditPage = () => {
                           right: 0,
                           zIndex: 1,
                         }}
+                        onClick={() => openDeleteDialog(comment.id)}
                       >
                         X
                       </Button>
